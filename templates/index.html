@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>worldChat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar left-pane">
+        <div class="brand-row">
+          <h1>worldChat</h1>
+        </div>
+
+        <section class="panel">
+          <h2>Account</h2>
+          <form id="register-form" class="stack-form">
+            <input id="register-name" type="text" placeholder="New user name" maxlength="25" />
+            <button type="submit">Create account</button>
+          </form>
+          <form id="login-form" class="stack-form">
+            <select id="login-user"></select>
+            <button type="submit">Log in</button>
+          </form>
+          <button id="logout-button" class="secondary">Log out</button>
+        </section>
+
+        <section class="panel">
+          <h2>Servers</h2>
+          <form id="create-server-form" class="stack-form">
+            <input id="server-name" type="text" placeholder="Server name" maxlength="40" />
+            <textarea id="server-description" rows="2" placeholder="Server description"></textarea>
+            <button type="submit">Create server</button>
+          </form>
+          <form id="join-server-form" class="stack-form">
+            <input id="invite-code" type="text" placeholder="Invite code" maxlength="12" />
+            <button type="submit">Join server</button>
+          </form>
+          <div id="server-list" class="list-box"></div>
+        </section>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">Current workspace</div>
+            <h2 id="current-channel-title">Choose a chat</h2>
+          </div>
+          <div class="profile-pill" id="current-user-pill">Not logged in</div>
+        </header>
+
+        <section id="chat-panel" class="chat-panel">
+          <div id="messages" class="messages"></div>
+          <form id="message-form" class="message-form">
+            <input id="message-input" type="text" placeholder="Write a message..." maxlength="500" />
+            <button type="submit">Send</button>
+          </form>
+        </section>
+      </main>
+
+      <aside class="sidebar right-pane">
+        <section class="panel">
+          <h2>Direct Messages</h2>
+          <div id="dm-list" class="list-box"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Community</h2>
+          <div id="user-list" class="list-box"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Suggestions</h2>
+          <form id="suggestion-form" class="stack-form">
+            <select id="suggestion-server"></select>
+            <textarea id="suggestion-text" rows="3" placeholder="Suggest an idea for the server"></textarea>
+            <button type="submit">Share suggestion</button>
+          </form>
+          <div id="suggestion-list" class="list-box"></div>
+        </section>
+      </aside>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
