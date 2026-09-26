@@ -3,83 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>worldChat</title>
+    <title>worldChat | Built for communities</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar left-pane">
-        <div class="brand-row">
-          <h1>worldChat</h1>
+  <body class="landing-page">
+    <div class="landing-shell">
+      <header class="landing-header">
+        <div class="brand-inline">
+          <span class="brand-mark">w</span>
+          <span>worldChat</span>
         </div>
+        <nav class="landing-nav">
+          <a href="#overview">Overview</a>
+          <a href="#features">Features</a>
+          <a href="#security">Security</a>
+        </nav>
+        <a href="/dashboard" class="btn btn-primary small">Open app</a>
+      </header>
 
-        <section class="panel">
-          <h2>Account</h2>
-          <form id="register-form" class="stack-form">
-            <input id="register-name" type="text" placeholder="New user name" maxlength="25" />
-            <button type="submit">Create account</button>
-          </form>
-          <form id="login-form" class="stack-form">
-            <select id="login-user"></select>
-            <button type="submit">Log in</button>
-          </form>
-          <button id="logout-button" class="secondary">Log out</button>
-        </section>
-
-        <section class="panel">
-          <h2>Servers</h2>
-          <form id="create-server-form" class="stack-form">
-            <input id="server-name" type="text" placeholder="Server name" maxlength="40" />
-            <textarea id="server-description" rows="2" placeholder="Server description"></textarea>
-            <button type="submit">Create server</button>
-          </form>
-          <form id="join-server-form" class="stack-form">
-            <input id="invite-code" type="text" placeholder="Invite code" maxlength="12" />
-            <button type="submit">Join server</button>
-          </form>
-          <div id="server-list" class="list-box"></div>
-        </section>
-      </aside>
-
-      <main class="main-content">
-        <header class="topbar">
-          <div>
-            <div class="eyebrow">Current workspace</div>
-            <h2 id="current-channel-title">Choose a chat</h2>
+      <main class="landing-main">
+        <section class="hero-panel">
+          <div class="hero-copy">
+            <span class="eyebrow">COMMUNITY NETWORK</span>
+            <h1>Private conversations built for thriving communities.</h1>
+            <p>
+              worldChat creates a polished social workspace where people can build communities,
+              share ideas, and quickly connect through direct messaging and invite-based servers.
+            </p>
+            <div class="hero-actions">
+              <a href="/dashboard" class="btn btn-primary">Launch dashboard</a>
+              <a href="#features" class="btn btn-secondary">See features</a>
+            </div>
+            <ul class="stat-row">
+              <li><strong>12k+</strong><span>messages/day</span></li>
+              <li><strong>240</strong><span>community spaces</span></li>
+              <li><strong>24/7</strong><span>online presence</span></li>
+            </ul>
           </div>
-          <div class="profile-pill" id="current-user-pill">Not logged in</div>
-        </header>
 
-        <section id="chat-panel" class="chat-panel">
-          <div id="messages" class="messages"></div>
-          <form id="message-form" class="message-form">
-            <input id="message-input" type="text" placeholder="Write a message..." maxlength="500" />
-            <button type="submit">Send</button>
-          </form>
+          <div class="auth-panel">
+            <div class="panel-tite">Welcome</div>
+            <form id="register-form" class="stack-form">
+              <label>
+                <span>New user name</span>
+                <input id="register-name" type="text" maxlength="25" placeholder="Enter a nickname" />
+              </label>
+              <button type="submit" class="btn btn-primary full">Create account</button>
+            </form>
+
+            <div class="divider"><span>or continue</span></div>
+
+            <form id="login-form" class="stack-form">
+              <label>
+                <span>Login to existing account</span>
+                <select id="login-user"></select>
+              </label>
+              <button type="submit" class="btn btn-primary full">Log in</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="features" class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-kicker">01</span>
+            <h3>Direct messaging</h3>
+            <p>Start personal conversations and keep them organized with lightweight DM threads.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-kicker">02</span>
+            <h3>Server communities</h3>
+            <p>Create private communities, share an invite, and keep members connected around a niche theme.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-kicker">03</span>
+            <h3>Profile identity</h3>
+            <p>Every user receives a unique skew code that adds personality and memorability to their profile.</p>
+          </article>
         </section>
       </main>
-
-      <aside class="sidebar right-pane">
-        <section class="panel">
-          <h2>Direct Messages</h2>
-          <div id="dm-list" class="list-box"></div>
-        </section>
-
-        <section class="panel">
-          <h2>Community</h2>
-          <div id="user-list" class="list-box"></div>
-        </section>
-
-        <section class="panel">
-          <h2>Suggestions</h2>
-          <form id="suggestion-form" class="stack-form">
-            <select id="suggestion-server"></select>
-            <textarea id="suggestion-text" rows="3" placeholder="Suggest an idea for the server"></textarea>
-            <button type="submit">Share suggestion</button>
-          </form>
-          <div id="suggestion-list" class="list-box"></div>
-        </section>
-      </aside>
     </div>
 
     <script src="{{ url_for('static', filename='app.js') }}"></script>

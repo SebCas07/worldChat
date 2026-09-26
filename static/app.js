@@ -57,7 +57,22 @@ function getServerById(serverId) {
   return state.appData.servers.find((server) => server.id === serverId) || null;
 }
 
+function isDashboardPage() {
+  return Boolean(document.getElementById("server-list"));
+}
+
 async function refreshState() {
+  if (!isDashboardPage()) {
+    if (elements.loginUser) {
+      const data = await apiFetch("/api/state", { method: "GET" });
+      const userOptions = (data.users || [])
+        .map((user) => `<option value="${user.id}">${user.name} (${user.skew_code})</option>`)
+        .join("");
+      elements.loginUser.innerHTML = userOptions || '<option value="">No users</option>';
+    }
+    return;
+  }
+
   const data = await apiFetch("/api/state", { method: "GET" });
   state.appData = data;
   state.currentUserId = data.current_user ? data.current_user.id : null;
@@ -106,7 +121,7 @@ function renderServers(servers) {
         <div class="server-card">
           <strong>${server.name}</strong>
           <div>${server.description}</div>
-          <div>Invite: ${server.invite_code}</div>
+          <div class="inline-pill">Invite: ${server.invite_code}</div>
           <button data-server-id="${server.id}" data-action="select-server">Open</button>
           ${isOwner ? `<button data-server-id="${server.id}" data-action="delete-server" class="secondary">Delete</button>` : ""}
         </div>
@@ -295,6 +310,10 @@ async function registerUser(event) {
   });
 
   elements.registerForm.reset();
+  if (window.location.pathname === "/") {
+    window.location.href = "/dashboard";
+    return;
+  }
   await refreshState();
 }
 
@@ -310,6 +329,11 @@ async function loginUser(event) {
     method: "POST",
     body: JSON.stringify({ user_id: selectedUserId }),
   });
+
+  if (window.location.pathname === "/") {
+    window.location.href = "/dashboard";
+    return;
+  }
   await refreshState();
 }
 
@@ -413,13 +437,27 @@ async function submitSuggestion(event) {
   await refreshState();
 }
 
-elements.registerForm.addEventListener("submit", registerUser);
-elements.loginForm.addEventListener("submit", loginUser);
-elements.logoutButton.addEventListener("click", logoutUser);
-elements.createServerForm.addEventListener("submit", createServer);
-elements.joinServerForm.addEventListener("submit", joinServer);
-elements.messageForm.addEventListener("submit", sendMessage);
-elements.suggestionForm.addEventListener("submit", submitSuggestion);
+if (elements.registerForm) {
+  elements.registerForm.addEventListener("submit", registerUser);
+}
+if (elements.loginForm) {
+  elements.loginForm.addEventListener("submit", loginUser);
+}
+if (elements.logoutButton) {
+  elements.logoutButton.addEventListener("click", logoutUser);
+}
+if (elements.createServerForm) {
+  elements.createServerForm.addEventListener("submit", createServer);
+}
+if (elements.joinServerForm) {
+  elements.joinServerForm.addEventListener("submit", joinServer);
+}
+if (elements.messageForm) {
+  elements.messageForm.addEventListener("submit", sendMessage);
+}
+if (elements.suggestionForm) {
+  elements.suggestionForm.addEventListener("submit", submitSuggestion);
+}
 
 refreshState().catch((error) => {
   console.error(error);

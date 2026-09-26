@@ -142,6 +142,11 @@ def index():
     return render_template("index.html")
 
 
+@app.get("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+
 @app.get("/api/state")
 def get_state():
     users = [user_payload(user) for user in SESSION_MEMORY["users"].values()]
