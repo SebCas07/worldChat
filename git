@@ -1,0 +1,1363 @@
+[33mcommit 2d7772b4fc97b3c2ed09363fafc435d8e2e43049[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: SebCas07 <tiancas07@gmail.com>
+Date:   Fri Sep 25 15:08:23 2026 -0500
+
+    First prompt completion
+
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7ffc8dc[m
+[1m--- /dev/null[m
+[1m+++ b/.gitignore[m
+[36m@@ -0,0 +1,7 @@[m
+[32m+[m[32m__pycache__/[m
+[32m+[m[32m*.pyc[m
+[32m+[m[32m.env[m
+[32m+[m[32m.venv/[m
+[32m+[m[32mvenv/[m
+[32m+[m[32m.pytest_cache/[m
+[32m+[m[32m.DS_Store[m
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 23f34c7..e3dd16b 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,2 +1,143 @@[m
+ # worldChat[m
+[31m-In inspiration of discord, this program is is designed to connect users through communities built upon a wide range of topics. The main goal of this program is to connect everyone in a shared space where people can get to know one another. [m
+[32m+[m
+[32m+[m[32mA browser-based communication platform inspired by Discord, built with HTML, CSS, JavaScript, and Python Flask. The application models a lightweight social ecosystem where users can create accounts, join servers, send direct messages, block users, and add community suggestions. The project intentionally uses session-based in-memory storage instead of PostgreSQL to satisfy the requested architecture constraints.[m
+[32m+[m
+[32m+[m[32m## Overview[m
+[32m+[m
+[32m+[m[32mworldChat includes:[m
+[32m+[m
+[32m+[m[32m- Direct messaging between users[m
+[32m+[m[32m- Group chat-style DM threads[m
+[32m+[m[32m- Server creation and ownership rules[m
+[32m+[m[32m- Invite-code based server membership[m
+[32m+[m[32m- User blocking and unblocking[m
+[32m+[m[32m- Custom user profile skew codes[m
+[32m+[m[32m- Suggestion boxes for community ideas[m
+[32m+[m[32m- Responsive layout for desktop, tablet, and mobile browsing[m
+[32m+[m
+[32m+[m[32m## Tech Stack[m
+[32m+[m
+[32m+[m[32m- Frontend: HTML, CSS, vanilla JavaScript[m
+[32m+[m[32m- Backend: Python, Flask[m
+[32m+[m[32m- Persistence: in-memory session storage using Python dictionaries[m
+[32m+[m[32m- Security: no API keys required for default operation[m
+[32m+[m
+[32m+[m[32m## Project Structure[m
+[32m+[m
+[32m+[m[32m```text[m
+[32m+[m[32mworldChat/[m
+[32m+[m[32m├── app.py                 # Flask application and in-memory data model[m
+[32m+[m[32m├── requirements.txt       # Python dependencies[m
+[32m+[m[32m├── .gitignore             # Secret and cache exclusions[m
+[32m+[m[32m├── README.md              # Project documentation[m
+[32m+[m[32m├── static/[m
+[32m+[m[32m│   ├── app.js             # Frontend logic and interactions[m
+[32m+[m[32m│   └── styles.css         # Application styling[m
+[32m+[m[32m├── templates/[m
+[32m+[m[32m│   └── index.html         # Application shell and UI layout[m
+[32m+[m[32m└── .env                   # Optional environment file for local secrets[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32m## Why the Data Model Is Structured This Way[m
+[32m+[m
+[32m+[m[32mThe application uses a top-level `SESSION_MEMORY` dictionary in `app.py` to simulate a lightweight database. That dictionary contains separate collections for users, servers, DM threads, and suggestions. This approach keeps the application simple and operational without needing PostgreSQL while still reflecting the same high-level data organization a real backend would use.[m
+[32m+[m
+[32m+[m[32m### Data model snapshot[m
+[32m+[m
+[32m+[m[32m```python[m
+[32m+[m[32mSESSION_MEMORY = {[m
+[32m+[m[32m    "users": {},[m
+[32m+[m[32m    "servers": {},[m
+[32m+[m[32m    "dm_threads": [],[m
+[32m+[m[32m    "suggestions": [],[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mThis is intentionally clear and extensible:[m
+[32m+[m
+[32m+[m[32m- `users` stores account metadata such as user ID, display name, skew code, and blocked users.[m
+[32m+[m[32m- `servers` stores community details, ownership, invite codes, member IDs, and message history.[m
+[32m+[m[32m- `dm_threads` contains direct-message conversation records with participant IDs and message arrays.[m
+[32m+[m[32m- `suggestions` keeps community ideas tied to the user who posted them and the server they target.[m
+[32m+[m
+[32m+[m[32m## Installation[m
+[32m+[m
+[32m+[m[32m1. Open a terminal in the project folder.[m
+[32m+[m[32m2. Create and activate a virtual environment if desired.[m
+[32m+[m[32m3. Install dependencies:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mpython -m pip install -r requirements.txt[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32m## Run the App[m
+[32m+[m
+[32m+[m[32mStart the Flask server:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mpython app.py[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mThen open:[m
+[32m+[m
+[32m+[m[32m```text[m
+[32m+[m[32mhttp://127.0.0.1:5000/[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32m## How to Use the App[m
+[32m+[m
+[32m+[m[32m1. Create a user account from the left panel.[m
+[32m+[m[32m2. Choose a user from the login dropdown and sign in.[m
+[32m+[m[32m3. Create a server or join one using a valid invite code.[m
+[32m+[m[32m4. Open a server chat and send messages.[m
+[32m+[m[32m5. Start a direct message from a user card.[m
+[32m+[m[32m6. Block or unblock another user from the community panel.[m
+[32m+[m[32m7. Add suggestions to a server in the right panel.[m
+[32m+[m
+[32m+[m[32m## Backend Notes[m
+[32m+[m
+[32m+[m[32mThe Flask routes in `app.py` handle the communication logic, including:[m
+[32m+[m
+[32m+[m[32m- user registration and login[m
+[32m+[m[32m- server creation and deletion[m
+[32m+[m[32m- server join flow with invite codes[m
+[32m+[m[32m- message posting to servers and DM threads[m
+[32m+[m[32m- user blocking logic[m
+[32m+[m[32m- suggestion submission[m
+[32m+[m
+[32m+[m[32mEach route reads from or updates `SESSION_MEMORY` and responds with JSON so the frontend can re-render the live interface without full page reloads.[m
+[32m+[m
+[32m+[m[32m## Frontend Notes[m
+[32m+[m
+[32m+[m[32mThe JavaScript file in `static/app.js` keeps the UI synchronized with the backend by calling `/api/state` after each action. This ensures the server list, active chat, user list, DM list, and suggestions are refreshed immediately after events like login, message send, or invite join.[m
+[32m+[m
+[32m+[m[32m## Requirements and Constraints[m
+[32m+[m
+[32m+[m[32mThis project satisfies the requested constraints:[m
+[32m+[m
+[32m+[m[32m- No API keys are required for the default local version.[m
+[32m+[m[32m- The app is browser-based and designed to work across desktop and mobile-sized screens.[m
+[32m+[m[32m- Sensitive information is excluded through `.gitignore` and optional `.env` support.[m
+[32m+[m[32m- Code comments explain the data structure and route behavior inside `app.py`.[m
+[32m+[m[32m- Application logic is kept in a simple, readable structure suitable for iterative improvements.[m
+[32m+[m
+[32m+[m[32m## Important Notes[m
+[32m+[m
+[32m+[m[32m- This is a prototype built for local development and demo use.[m
+[32m+[m[32m- The in-memory store resets when the Flask process stops.[m
+[32m+[m[32m- The project does not push code to a remote repository unless explicitly authorized.[m
+[32m+[m
+[32m+[m[32m## Future Enhancements[m
+[32m+[m
+[32m+[m[32mPotential next steps include:[m
+[32m+[m
+[32m+[m[32m- persistent file-based storage with JSON backup[m
+[32m+[m[32m- explicit role management for server moderators[m
+[32m+[m[32m- richer channel system with multiple room tabs[m
+[32m+[m[32m- better mobile-first navigation[m
+[32m+[m[32m- real authentication and authorization[m
+[32m+[m[32m- websocket-based instant updates[m
+[32m+[m
+[32m+[m[32m## License[m
+[32m+[m
+[32m+[m[32mThis project is intended for local educational and prototype development use.[m
+[1mdiff --git a/app.py b/app.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..403cf52[m
+[1m--- /dev/null[m
+[1m+++ b/app.py[m
+[36m@@ -0,0 +1,429 @@[m
+[32m+[m[32mfrom __future__ import annotations[m
+[32m+[m
+[32m+[m[32mimport random[m
+[32m+[m[32mimport string[m
+[32m+[m[32mfrom datetime import datetime, timezone[m
+[32m+[m[32mfrom uuid import uuid4[m
+[32m+[m
+[32m+[m[32mfrom flask import Flask, jsonify, render_template, request, session[m
+[32m+[m
+[32m+[m[32mapp = Flask(__name__)[m
+[32m+[m[32mapp.secret_key = "worldchat-dev-secret"[m
+[32m+[m[32mapp.config["JSON_SORT_KEYS"] = False[m
+[32m+[m
+[32m+[m[32m# SESSION_MEMORY acts as the project database for this prototype.[m
+[32m+[m[32m# It preserves user accounts, server metadata, invite codes, and chats in memory[m
+[32m+[m[32m# while the application is running. This meets the requirement to use session memory[m
+[32m+[m[32m# rather than a database like Postgres.[m
+[32m+[m[32mSESSION_MEMORY = {[m
+[32m+[m[32m    "users": {},[m
+[32m+[m[32m    "servers": {},[m
+[32m+[m[32m    "dm_threads": [],[m
+[32m+[m[32m    "suggestions": [],[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef iso_now() -> str:[m
+[32m+[m[32m    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef generate_skew_code() -> str:[m
+[32m+[m[32m    adjectives = ["Solar", "Nova", "Pixel", "Drift", "Echo", "Frost", "Cinder", "Orbit"][m
+[32m+[m[32m    nouns = ["Fox", "Wren", "Falcon", "Drake", "Raven", "Hawk", "Otter", "Bloom"][m
+[32m+[m[32m    suffix = "".join(random.choice(string.digits) for _ in range(3))[m
+[32m+[m[32m    return f"{random.choice(adjectives)}-{random.choice(nouns)}-{suffix}"[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef generate_invite_code() -> str:[m
+[32m+[m[32m    return "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef user_payload(user: dict) -> dict:[m
+[32m+[m[32m    return {[m
+[32m+[m[32m        "id": user["id"],[m
+[32m+[m[32m        "name": user["name"],[m
+[32m+[m[32m        "skew_code": user["skew_code"],[m
+[32m+[m[32m        "blocked_users": user.get("blocked_users", []),[m
+[32m+[m[32m        "status": user.get("status", "online"),[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef server_payload(server: dict) -> dict:[m
+[32m+[m[32m    return {[m
+[32m+[m[32m        "id": server["id"],[m
+[32m+[m[32m        "name": server["name"],[m
+[32m+[m[32m        "description": server.get("description", ""),[m
+[32m+[m[32m        "owner_id": server["owner_id"],[m
+[32m+[m[32m        "invite_code": server["invite_code"],[m
+[32m+[m[32m        "channels": server.get("channels", ["general"]),[m
+[32m+[m[32m        "members": server.get("members", []),[m
+[32m+[m[32m        "messages": server.get("messages", []),[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef seed_demo_data() -> None:[m
+[32m+[m[32m    if SESSION_MEMORY["users"]:[m
+[32m+[m[32m        return[m
+[32m+[m
+[32m+[m[32m    demo_users = {[m
+[32m+[m[32m        "u-1": {[m
+[32m+[m[32m            "id": "u-1",[m
+[32m+[m[32m            "name": "Ava",[m
+[32m+[m[32m            "skew_code": "Solar-Fox-301",[m
+[32m+[m[32m            "blocked_users": [],[m
+[32m+[m[32m            "status": "online",[m
+[32m+[m[32m        },[m
+[32m+[m[32m        "u-2": {[m
+[32m+[m[32m            "id": "u-2",[m
+[32m+[m[32m            "name": "Leo",[m
+[32m+[m[32m            "skew_code": "Nova-Hawk-882",[m
+[32m+[m[32m            "blocked_users": [],[m
+[32m+[m[32m            "status": "online",[m
+[32m+[m[32m        },[m
+[32m+[m[32m        "u-3": {[m
+[32m+[m[32m            "id": "u-3",[m
+[32m+[m[32m            "name": "Maya",[m
+[32m+[m[32m            "skew_code": "Echo-Raven-147",[m
+[32m+[m[32m            "blocked_users": [],[m
+[32m+[m[32m            "status": "idle",[m
+[32m+[m[32m        },[m
+[32m+[m[32m    }[m
+[32m+[m[32m    SESSION_MEMORY["users"] = demo_users[m
+[32m+[m[32m    SESSION_MEMORY["servers"] = {[m
+[32m+[m[32m        "s-1": {[m
+[32m+[m[32m            "id": "s-1",[m
+[32m+[m[32m            "name": "Pixel Guild",[m
+[32m+[m[32m            "description": "A cozy tech and design hangout.",[m
+[32m+[m[32m            "owner_id": "u-1",[m
+[32m+[m[32m            "invite_code": "PIXEL42",[m
+[32m+[m[32m            "channels": ["general", "announcements", "projects"],[m
+[32m+[m[32m            "members": ["u-1", "u-2", "u-3"],[m
+[32m+[m[32m            "messages": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "id": "m-1",[m
+[32m+[m[32m                    "user_id": "u-1",[m
+[32m+[m[32m                    "user_name": "Ava",[m
+[32m+[m[32m                    "text": "Welcome to Pixel Guild!",[m
+[32m+[m[32m                    "created_at": iso_now(),[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    SESSION_MEMORY["dm_threads"] = [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "id": "dm-1",[m
+[32m+[m[32m            "participants": ["u-1", "u-2"],[m
+[32m+[m[32m            "messages": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "id": "dm-m-1",[m
+[32m+[m[32m                    "user_id": "u-2",[m
+[32m+[m[32m                    "user_name": "Leo",[m
+[32m+[m[32m                    "text": "Want to meet later for a review session?",[m
+[32m+[m[32m                    "created_at": iso_now(),[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m        }[m
+[32m+[m[32m    ][m
+[32m+[m[32m    SESSION_MEMORY["suggestions"] = [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "id": "suggest-1",[m
+[32m+[m[32m            "user_id": "u-3",[m
+[32m+[m[32m            "server_id": "s-1",[m
+[32m+[m[32m            "text": "Maybe we can host a game night this Friday.",[m
+[32m+[m[32m        }[m
+[32m+[m[32m    ][m
+[32m+[m
+[32m+[m
+[32m+[m[32mseed_demo_data()[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.get("/")[m
+[32m+[m[32mdef index():[m
+[32m+[m[32m    return render_template("index.html")[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.get("/api/state")[m
+[32m+[m[32mdef get_state():[m
+[32m+[m[32m    users = [user_payload(user) for user in SESSION_MEMORY["users"].values()][m
+[32m+[m[32m    servers = [server_payload(server) for server in SESSION_MEMORY["servers"].values()][m
+[32m+[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    current_user = SESSION_MEMORY["users"].get(current_user_id)[m
+[32m+[m
+[32m+[m[32m    return jsonify([m
+[32m+[m[32m        {[m
+[32m+[m[32m            "current_user": user_payload(current_user) if current_user else None,[m
+[32m+[m[32m            "users": users,[m
+[32m+[m[32m            "servers": servers,[m
+[32m+[m[32m            "dm_threads": SESSION_MEMORY["dm_threads"],[m
+[32m+[m[32m            "suggestions": SESSION_MEMORY["suggestions"],[m
+[32m+[m[32m        }[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/register")[m
+[32m+[m[32mdef register_user():[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    name = (data.get("name") or "").strip()[m
+[32m+[m[32m    if not name:[m
+[32m+[m[32m        return jsonify({"error": "Name is required."}), 400[m
+[32m+[m
+[32m+[m[32m    user_id = f"u-{uuid4().hex[:6]}"[m
+[32m+[m[32m    user = {[m
+[32m+[m[32m        "id": user_id,[m
+[32m+[m[32m        "name": name,[m
+[32m+[m[32m        "skew_code": generate_skew_code(),[m
+[32m+[m[32m        "blocked_users": [],[m
+[32m+[m[32m        "status": "online",[m
+[32m+[m[32m    }[m
+[32m+[m[32m    SESSION_MEMORY["users"][user_id] = user[m
+[32m+[m[32m    session["user_id"] = user_id[m
+[32m+[m[32m    return jsonify({"message": "User created.", "user": user_payload(user)})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/login")[m
+[32m+[m[32mdef login_user():[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    user_id = data.get("user_id")[m
+[32m+[m[32m    if not user_id or user_id not in SESSION_MEMORY["users"]:[m
+[32m+[m[32m        return jsonify({"error": "Unknown user."}), 400[m
+[32m+[m
+[32m+[m[32m    session["user_id"] = user_id[m
+[32m+[m[32m    SESSION_MEMORY["users"][user_id]["status"] = "online"[m
+[32m+[m[32m    return jsonify({"message": "Logged in.", "user": user_payload(SESSION_MEMORY["users"][user_id])})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/logout")[m
+[32m+[m[32mdef logout_user():[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if current_user_id and current_user_id in SESSION_MEMORY["users"]:[m
+[32m+[m[32m        SESSION_MEMORY["users"][current_user_id]["status"] = "offline"[m
+[32m+[m[32m    session.clear()[m
+[32m+[m[32m    return jsonify({"message": "Logged out."})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/servers")[m
+[32m+[m[32mdef create_server():[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    name = (data.get("name") or "").strip()[m
+[32m+[m[32m    description = (data.get("description") or "").strip()[m
+[32m+[m[32m    if not name:[m
+[32m+[m[32m        return jsonify({"error": "Server name is required."}), 400[m
+[32m+[m
+[32m+[m[32m    server_id = f"s-{uuid4().hex[:6]}"[m
+[32m+[m[32m    server = {[m
+[32m+[m[32m        "id": server_id,[m
+[32m+[m[32m        "name": name,[m
+[32m+[m[32m        "description": description or "A new community space.",[m
+[32m+[m[32m        "owner_id": current_user_id,[m
+[32m+[m[32m        "invite_code": generate_invite_code(),[m
+[32m+[m[32m        "channels": ["general"],[m
+[32m+[m[32m        "members": [current_user_id],[m
+[32m+[m[32m        "messages": [[m
+[32m+[m[32m            {[m
+[32m+[m[32m                "id": f"m-{uuid4().hex[:6]}",[m
+[32m+[m[32m                "user_id": current_user_id,[m
+[32m+[m[32m                "user_name": SESSION_MEMORY["users"][current_user_id]["name"],[m
+[32m+[m[32m                "text": f"{name} has been created.",[m
+[32m+[m[32m                "created_at": iso_now(),[m
+[32m+[m[32m            }[m
+[32m+[m[32m        ],[m
+[32m+[m[32m    }[m
+[32m+[m[32m    SESSION_MEMORY["servers"][server_id] = server[m
+[32m+[m[32m    return jsonify({"message": "Server created.", "server": server_payload(server)})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/servers/join")[m
+[32m+[m[32mdef join_server():[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    invite_code = (data.get("invite_code") or "").strip().upper()[m
+[32m+[m[32m    if not invite_code:[m
+[32m+[m[32m        return jsonify({"error": "Invite code required."}), 400[m
+[32m+[m
+[32m+[m[32m    target_server = None[m
+[32m+[m[32m    for server in SESSION_MEMORY["servers"].values():[m
+[32m+[m[32m        if server["invite_code"] == invite_code:[m
+[32m+[m[32m            target_server = server[m
+[32m+[m[32m            break[m
+[32m+[m
+[32m+[m[32m    if not target_server:[m
+[32m+[m[32m        return jsonify({"error": "Invite code not found."}), 404[m
+[32m+[m
+[32m+[m[32m    if current_user_id in target_server["members"]:[m
+[32m+[m[32m        return jsonify({"message": "Already a member."})[m
+[32m+[m
+[32m+[m[32m    target_server["members"].append(current_user_id)[m
+[32m+[m[32m    target_server["messages"].append([m
+[32m+[m[32m        {[m
+[32m+[m[32m            "id": f"m-{uuid4().hex[:6]}",[m
+[32m+[m[32m            "user_id": current_user_id,[m
+[32m+[m[32m            "user_name": SESSION_MEMORY["users"][current_user_id]["name"],[m
+[32m+[m[32m            "text": f"{SESSION_MEMORY['users'][current_user_id]['name']} joined the server.",[m
+[32m+[m[32m            "created_at": iso_now(),[m
+[32m+[m[32m        }[m
+[32m+[m[32m    )[m
+[32m+[m[32m    return jsonify({"message": "Joined server.", "server": server_payload(target_server)})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.delete("/api/servers/<server_id>")[m
+[32m+[m[32mdef delete_server(server_id):[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    server = SESSION_MEMORY["servers"].get(server_id)[m
+[32m+[m[32m    if not server:[m
+[32m+[m[32m        return jsonify({"error": "Server not found."}), 404[m
+[32m+[m
+[32m+[m[32m    if server["owner_id"] != current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Only the owner can delete this server."}), 403[m
+[32m+[m
+[32m+[m[32m    del SESSION_MEMORY["servers"][server_id][m
+[32m+[m[32m    return jsonify({"message": "Server deleted."})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/servers/<server_id>/messages")[m
+[32m+[m[32mdef post_server_message(server_id):[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    server = SESSION_MEMORY["servers"].get(server_id)[m
+[32m+[m[32m    if not server:[m
+[32m+[m[32m        return jsonify({"error": "Server not found."}), 404[m
+[32m+[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    text = (data.get("text") or "").strip()[m
+[32m+[m[32m    if not text:[m
+[32m+[m[32m        return jsonify({"error": "Message text is required."}), 400[m
+[32m+[m
+[32m+[m[32m    if current_user_id not in server["members"]:[m
+[32m+[m[32m        return jsonify({"error": "You must be a member to chat here."}), 403[m
+[32m+[m
+[32m+[m[32m    message = {[m
+[32m+[m[32m        "id": f"m-{uuid4().hex[:6]}",[m
+[32m+[m[32m        "user_id": current_user_id,[m
+[32m+[m[32m        "user_name": SESSION_MEMORY["users"][current_user_id]["name"],[m
+[32m+[m[32m        "text": text,[m
+[32m+[m[32m        "created_at": iso_now(),[m
+[32m+[m[32m    }[m
+[32m+[m[32m    server["messages"].append(message)[m
+[32m+[m[32m    return jsonify({"message": "Message sent.", "message_item": message})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/dm")[m
+[32m+[m[32mdef create_dm():[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    other_user_id = data.get("user_id")[m
+[32m+[m[32m    if not other_user_id or other_user_id == current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Choose another user."}), 400[m
+[32m+[m
+[32m+[m[32m    for thread in SESSION_MEMORY["dm_threads"]:[m
+[32m+[m[32m        members = set(thread["participants"])[m
+[32m+[m[32m        if {current_user_id, other_user_id}.issubset(members):[m
+[32m+[m[32m            return jsonify({"message": "Direct chat already exists.", "thread": thread})[m
+[32m+[m
+[32m+[m[32m    thread = {[m
+[32m+[m[32m        "id": f"dm-{uuid4().hex[:6]}",[m
+[32m+[m[32m        "participants": [current_user_id, other_user_id],[m
+[32m+[m[32m        "messages": [],[m
+[32m+[m[32m    }[m
+[32m+[m[32m    SESSION_MEMORY["dm_threads"].append(thread)[m
+[32m+[m[32m    return jsonify({"message": "Created direct message thread.", "thread": thread})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/dm/<thread_id>/messages")[m
+[32m+[m[32mdef send_dm_message(thread_id):[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    thread = next((item for item in SESSION_MEMORY["dm_threads"] if item["id"] == thread_id), None)[m
+[32m+[m[32m    if not thread:[m
+[32m+[m[32m        return jsonify({"error": "Conversation not found."}), 404[m
+[32m+[m
+[32m+[m[32m    if current_user_id not in thread["participants"]:[m
+[32m+[m[32m        return jsonify({"error": "You are not part of this chat."}), 403[m
+[32m+[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    text = (data.get("text") or "").strip()[m
+[32m+[m[32m    if not text:[m
+[32m+[m[32m        return jsonify({"error": "Message text is required."}), 400[m
+[32m+[m
+[32m+[m[32m    message = {[m
+[32m+[m[32m        "id": f"dm-m-{uuid4().hex[:6]}",[m
+[32m+[m[32m        "user_id": current_user_id,[m
+[32m+[m[32m        "user_name": SESSION_MEMORY["users"][current_user_id]["name"],[m
+[32m+[m[32m        "text": text,[m
+[32m+[m[32m        "created_at": iso_now(),[m
+[32m+[m[32m    }[m
+[32m+[m[32m    thread["messages"].append(message)[m
+[32m+[m[32m    return jsonify({"message": "Direct message sent.", "message_item": message})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/users/<user_id>/block")[m
+[32m+[m[32mdef block_user(user_id):[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    target_user = SESSION_MEMORY["users"].get(user_id)[m
+[32m+[m[32m    if not target_user:[m
+[32m+[m[32m        return jsonify({"error": "User not found."}), 404[m
+[32m+[m
+[32m+[m[32m    current_user = SESSION_MEMORY["users"][current_user_id][m
+[32m+[m[32m    if user_id not in current_user.get("blocked_users", []):[m
+[32m+[m[32m        current_user.setdefault("blocked_users", []).append(user_id)[m
+[32m+[m[32m    return jsonify({"message": f"Blocked {target_user['name']}.", "user": user_payload(current_user)})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/users/<user_id>/unblock")[m
+[32m+[m[32mdef unblock_user(user_id):[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    current_user = SESSION_MEMORY["users"].get(current_user_id)[m
+[32m+[m[32m    if not current_user:[m
+[32m+[m[32m        return jsonify({"error": "User not found."}), 404[m
+[32m+[m
+[32m+[m[32m    current_user["blocked_users"] = [value for value in current_user.get("blocked_users", []) if value != user_id][m
+[32m+[m[32m    return jsonify({"message": "User unblocked.", "user": user_payload(current_user)})[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.post("/api/suggestions")[m
+[32m+[m[32mdef add_suggestion():[m
+[32m+[m[32m    current_user_id = session.get("user_id")[m
+[32m+[m[32m    if not current_user_id:[m
+[32m+[m[32m        return jsonify({"error": "Login required."}), 401[m
+[32m+[m
+[32m+[m[32m    data = request.get_json(silent=True) or {}[m
+[32m+[m[32m    server_id = data.get("server_id")[m
+[32m+[m[32m    text = (data.get("text") or "").strip()[m
+[32m+[m[32m    if not server_id or not text:[m
+[32m+[m[32m        return jsonify({"error": "Server and suggestion text are required."}), 400[m
+[32m+[m
+[32m+[m[32m    suggestion = {[m
+[32m+[m[32m        "id": f"suggest-{uuid4().hex[:6]}",[m
+[32m+[m[32m        "user_id": current_user_id,[m
+[32m+[m[32m        "server_id": server_id,[m
+[32m+[m[32m        "text": text,[m
+[32m+[m[32m    }[m
+[32m+[m[32m    SESSION_MEMORY["suggestions"].append(suggestion)[m
+[32m+[m[32m    return jsonify({"message": "Suggestion saved.", "suggestion": suggestion})[m
+[32m+[m
+[32m+[m
+[32m+[m[32mif __name__ == "__main__":[m
+[32m+[m[32m    app.run(host="0.0.0.0", port=5000, debug=True)[m
+[1mdiff --git a/requirements.txt b/requirements.txt[m
+[1mnew file mode 100644[m
+[1mindex 0000000..22ac75b[m
+[1m--- /dev/null[m
+[1m+++ b/requirements.txt[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32mFlask==3.1.0[m
+[1mdiff --git a/static/app.js b/static/app.js[m
+[1mnew file mode 100644[m
+[1mindex 0000000..77d6aa1[m
+[1m--- /dev/null[m
+[1m+++ b/static/app.js[m
+[36m@@ -0,0 +1,427 @@[m
+[32m+[m[32mconst state = {[m
+[32m+[m[32m  currentUserId: null,[m
+[32m+[m[32m  activeThread: null,[m
+[32m+[m[32m  activeThreadType: "server",[m
+[32m+[m[32m  appData: {[m
+[32m+[m[32m    current_user: null,[m
+[32m+[m[32m    users: [],[m
+[32m+[m[32m    servers: [],[m
+[32m+[m[32m    dm_threads: [],[m
+[32m+[m[32m    suggestions: [],[m
+[32m+[m[32m  },[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mconst elements = {[m
+[32m+[m[32m  registerForm: document.getElementById("register-form"),[m
+[32m+[m[32m  registerName: document.getElementById("register-name"),[m
+[32m+[m[32m  loginForm: document.getElementById("login-form"),[m
+[32m+[m[32m  loginUser: document.getElementById("login-user"),[m
+[32m+[m[32m  logoutButton: document.getElementById("logout-button"),[m
+[32m+[m[32m  createServerForm: document.getElementById("create-server-form"),[m
+[32m+[m[32m  serverName: document.getElementById("server-name"),[m
+[32m+[m[32m  serverDescription: document.getElementById("server-description"),[m
+[32m+[m[32m  joinServerForm: document.getElementById("join-server-form"),[m
+[32m+[m[32m  inviteCode: document.getElementById("invite-code"),[m
+[32m+[m[32m  serverList: document.getElementById("server-list"),[m
+[32m+[m[32m  userList: document.getElementById("user-list"),[m
+[32m+[m[32m  dmList: document.getElementById("dm-list"),[m
+[32m+[m[32m  suggestionForm: document.getElementById("suggestion-form"),[m
+[32m+[m[32m  suggestionServer: document.getElementById("suggestion-server"),[m
+[32m+[m[32m  suggestionText: document.getElementById("suggestion-text"),[m
+[32m+[m[32m  suggestionList: document.getElementById("suggestion-list"),[m
+[32m+[m[32m  messages: document.getElementById("messages"),[m
+[32m+[m[32m  messageForm: document.getElementById("message-form"),[m
+[32m+[m[32m  messageInput: document.getElementById("message-input"),[m
+[32m+[m[32m  currentChannelTitle: document.getElementById("current-channel-title"),[m
+[32m+[m[32m  currentUserPill: document.getElementById("current-user-pill"),[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32masync function apiFetch(url, options = {}) {[m
+[32m+[m[32m  const response = await fetch(url, {[m
+[32m+[m[32m    headers: { "Content-Type": "application/json" },[m
+[32m+[m[32m    ...options,[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  const data = await response.json().catch(() => ({}));[m
+[32m+[m[32m  if (!response.ok) {[m
+[32m+[m[32m    throw new Error(data.error || "Request failed.");[m
+[32m+[m[32m  }[m
+[32m+[m[32m  return data;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction getUserById(userId) {[m
+[32m+[m[32m  return state.appData.users.find((user) => user.id === userId) || null;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction getServerById(serverId) {[m
+[32m+[m[32m  return state.appData.servers.find((server) => server.id === serverId) || null;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function refreshState() {[m
+[32m+[m[32m  const data = await apiFetch("/api/state", { method: "GET" });[m
+[32m+[m[32m  state.appData = data;[m
+[32m+[m[32m  state.currentUserId = data.current_user ? data.current_user.id : null;[m
+[32m+[m
+[32m+[m[32m  if (!state.activeThread && data.servers.length) {[m
+[32m+[m[32m    state.activeThreadType = "server";[m
+[32m+[m[32m    state.activeThread = data.servers[0].id;[m
+[32m+[m[32m  } else if (!state.activeThread && data.dm_threads.length) {[m
+[32m+[m[32m    state.activeThreadType = "dm";[m
+[32m+[m[32m    state.activeThread = data.dm_threads[0].id;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const userOptions = data.users[m
+[32m+[m[32m    .map((user) => `<option value="${user.id}">${user.name} (${user.skew_code})</option>`)[m
+[32m+[m[32m    .join("");[m
+[32m+[m[32m  elements.loginUser.innerHTML = userOptions || '<option value="">No users</option>';[m
+[32m+[m
+[32m+[m[32m  const serverOptions = (data.servers || [])[m
+[32m+[m[32m    .map((server) => `<option value="${server.id}">${server.name}</option>`)[m
+[32m+[m[32m    .join("");[m
+[32m+[m[32m  elements.suggestionServer.innerHTML = serverOptions || '<option value="">No servers</option>';[m
+[32m+[m
+[32m+[m[32m  if (data.current_user) {[m
+[32m+[m[32m    elements.currentUserPill.textContent = `${data.current_user.name} · ${data.current_user.skew_code}`;[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    elements.currentUserPill.textContent = "Not logged in";[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  renderServers(data.servers || []);[m
+[32m+[m[32m  renderUsers(data.users || []);[m
+[32m+[m[32m  renderDMs(data.dm_threads || []);[m
+[32m+[m[32m  renderSuggestions(data.suggestions || []);[m
+[32m+[m[32m  renderMessages();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction renderServers(servers) {[m
+[32m+[m[32m  if (!servers.length) {[m
+[32m+[m[32m    elements.serverList.innerHTML = "<p>No servers yet.</p>";[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  elements.serverList.innerHTML = servers[m
+[32m+[m[32m    .map((server) => {[m
+[32m+[m[32m      const isOwner = state.currentUserId && server.owner_id === state.currentUserId;[m
+[32m+[m[32m      return `[m
+[32m+[m[32m        <div class="server-card">[m
+[32m+[m[32m          <strong>${server.name}</strong>[m
+[32m+[m[32m          <div>${server.description}</div>[m
+[32m+[m[32m          <div>Invite: ${server.invite_code}</div>[m
+[32m+[m[32m          <button data-server-id="${server.id}" data-action="select-server">Open</button>[m
+[32m+[m[32m          ${isOwner ? `<button data-server-id="${server.id}" data-action="delete-server" class="secondary">Delete</button>` : ""}[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      `;[m
+[32m+[m[32m    })[m
+[32m+[m[32m    .join("");[m
+[32m+[m
+[32m+[m[32m  elements.serverList.querySelectorAll("button[data-action='select-server']").forEach((button) => {[m
+[32m+[m[32m    button.addEventListener("click", () => {[m
+[32m+[m[32m      state.activeThreadType = "server";[m
+[32m+[m[32m      state.activeThread = button.dataset.serverId;[m
+[32m+[m[32m      renderMessages();[m
+[32m+[m[32m    });[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  elements.serverList.querySelectorAll("button[data-action='delete-server']").forEach((button) => {[m
+[32m+[m[32m    button.addEventListener("click", async () => {[m
+[32m+[m[32m      await apiFetch(`/api/servers/${button.dataset.serverId}`, { method: "DELETE" });[m
+[32m+[m[32m      await refreshState();[m
+[32m+[m[32m    });[m
+[32m+[m[32m  });[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction renderUsers(users) {[m
+[32m+[m[32m  if (!users.length) {[m
+[32m+[m[32m    elements.userList.innerHTML = "<p>No users loaded.</p>";[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const currentUser = users.find((user) => user.id === state.currentUserId);[m
+[32m+[m[32m  const blocked = currentUser?.blocked_users || [];[m
+[32m+[m
+[32m+[m[32m  elements.userList.innerHTML = users[m
+[32m+[m[32m    .map((user) => {[m
+[32m+[m[32m      const isCurrent = user.id === state.currentUserId;[m
+[32m+[m[32m      const isBlocked = blocked.includes(user.id);[m
+[32m+[m[32m      const actions = isCurrent[m
+[32m+[m[32m        ? "<small>You</small>"[m
+[32m+[m[32m        : `[m
+[32m+[m[32m          <button data-user-id="${user.id}" data-action="dm-user">Message</button>[m
+[32m+[m[32m          <button data-user-id="${user.id}" data-action="block-user" class="secondary">${isBlocked ? "Unblock" : "Block"}</button>[m
+[32m+[m[32m        `;[m
+[32m+[m
+[32m+[m[32m      return `[m
+[32m+[m[32m        <div class="member-item">[m
+[32m+[m[32m          <strong>${user.name}</strong>[m
+[32m+[m[32m          <div>${user.skew_code} · ${user.status}</div>[m
+[32m+[m[32m          ${actions}[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      `;[m
+[32m+[m[32m    })[m
+[32m+[m[32m    .join("");[m
+[32m+[m
+[32m+[m[32m  elements.userList.querySelectorAll("button[data-action='dm-user']").forEach((button) => {[m
+[32m+[m[32m    button.addEventListener("click", async () => {[m
+[32m+[m[32m      if (!state.currentUserId) {[m
+[32m+[m[32m        alert("Please log in first.");[m
+[32m+[m[32m        return;[m
+[32m+[m[32m      }[m
+[32m+[m[32m      const userId = button.dataset.userId;[m
+[32m+[m[32m      const data = await apiFetch("/api/dm", {[m
+[32m+[m[32m        method: "POST",[m
+[32m+[m[32m        body: JSON.stringify({ user_id: userId }),[m
+[32m+[m[32m      });[m
+[32m+[m[32m      state.activeThreadType = "dm";[m
+[32m+[m[32m      state.activeThread = data.thread.id;[m
+[32m+[m[32m      await refreshState();[m
+[32m+[m[32m    });[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  elements.userList.querySelectorAll("button[data-action='block-user']").forEach((button) => {[m
+[32m+[m[32m    button.addEventListener("click", async () => {[m
+[32m+[m[32m      const userId = button.dataset.userId;[m
+[32m+[m[32m      const isBlocked = blocked.includes(userId);[m
+[32m+[m[32m      await apiFetch(isBlocked ? `/api/users/${userId}/unblock` : `/api/users/${userId}/block`, { method: "POST" });[m
+[32m+[m[32m      await refreshState();[m
+[32m+[m[32m    });[m
+[32m+[m[32m  });[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction renderDMs(dmThreads) {[m
+[32m+[m[32m  if (!dmThreads.length) {[m
+[32m+[m[32m    elements.dmList.innerHTML = "<p>No direct messages yet.</p>";[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  elements.dmList.innerHTML = dmThreads[m
+[32m+[m[32m    .map((thread) => {[m
+[32m+[m[32m      const names = thread.participants[m
+[32m+[m[32m        .map((participantId) => getUserById(participantId)?.name || "Unknown")[m
+[32m+[m[32m        .filter(Boolean)[m
+[32m+[m[32m        .join(", ");[m
+[32m+[m[32m      return `[m
+[32m+[m[32m        <div class="dm-card">[m
+[32m+[m[32m          <strong>${names}</strong>[m
+[32m+[m[32m          <button data-thread-id="${thread.id}" data-thread-type="dm">Open chat</button>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      `;[m
+[32m+[m[32m    })[m
+[32m+[m[32m    .join("");[m
+[32m+[m
+[32m+[m[32m  elements.dmList.querySelectorAll("button[data-thread-type='dm']").forEach((button) => {[m
+[32m+[m[32m    button.addEventListener("click", () => {[m
+[32m+[m[32m      state.activeThreadType = "dm";[m
+[32m+[m[32m      state.activeThread = button.dataset.threadId;[m
+[32m+[m[32m      renderMessages();[m
+[32m+[m[32m    });[m
+[32m+[m[32m  });[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction renderSuggestions(suggestions) {[m
+[32m+[m[32m  if (!suggestions.length) {[m
+[32m+[m[32m    elements.suggestionList.innerHTML = "<p>No suggestions yet.</p>";[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  elements.suggestionList.innerHTML = suggestions[m
+[32m+[m[32m    .map((suggestion) => {[m
+[32m+[m[32m      const server = getServerById(suggestion.server_id);[m
+[32m+[m[32m      const user = getUserById(suggestion.user_id);[m
+[32m+[m[32m      return `[m
+[32m+[m[32m        <div class="suggestion-item">[m
+[32m+[m[32m          <strong>${user ? user.name : "User"}</strong>[m
+[32m+[m[32m          <div>${server ? server.name : "Unknown server"}</div>[m
+[32m+[m[32m          <div>${suggestion.text}</div>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      `;[m
+[32m+[m[32m    })[m
+[32m+[m[32m    .join("");[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction renderMessages() {[m
+[32m+[m[32m  const currentThreadType = state.activeThreadType || "server";[m
+[32m+[m[32m  const currentThreadId = state.activeThread;[m
+[32m+[m
+[32m+[m[32m  const messages = [];[m
+[32m+[m[32m  let title = "Choose a chat";[m
+[32m+[m
+[32m+[m[32m  if (currentThreadType === "server" && currentThreadId) {[m
+[32m+[m[32m    const server = getServerById(currentThreadId);[m
+[32m+[m[32m    if (server) {[m
+[32m+[m[32m      title = `${server.name} · ${server.channels[0] || "general"}`;[m
+[32m+[m[32m      messages.push(...(server.messages || []));[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  if (currentThreadType === "dm" && currentThreadId) {[m
+[32m+[m[32m    const thread = state.appData.dm_threads.find((item) => item.id === currentThreadId);[m
+[32m+[m[32m    if (thread) {[m
+[32m+[m[32m      const names = thread.participants[m
+[32m+[m[32m        .map((id) => getUserById(id)?.name || "Unknown")[m
+[32m+[m[32m        .join(", ");[m
+[32m+[m[32m      title = `Direct message · ${names}`;[m
+[32m+[m[32m      messages.push(...(thread.messages || []));[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  elements.currentChannelTitle.textContent = title;[m
+[32m+[m[32m  if (!messages.length) {[m
+[32m+[m[32m    elements.messages.innerHTML = "<p>No messages yet in this chat.</p>";[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  elements.messages.innerHTML = messages[m
+[32m+[m[32m    .map((message) => `[m
+[32m+[m[32m      <div class="message-item">[m
+[32m+[m[32m        <strong>${message.user_name}</strong>[m
+[32m+[m[32m        <div>${message.text}</div>[m
+[32m+[m[32m        <div class="message-meta">${message.created_at}</div>[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    `)[m
+[32m+[m[32m    .join("");[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function registerUser(event) {[m
+[32m+[m[32m  event.preventDefault();[m
+[32m+[m[32m  const name = elements.registerName.value.trim();[m
+[32m+[m[32m  if (!name) {[m
+[32m+[m[32m    alert("Please enter a name.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  await apiFetch("/api/register", {[m
+[32m+[m[32m    method: "POST",[m
+[32m+[m[32m    body: JSON.stringify({ name }),[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  elements.registerForm.reset();[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function loginUser(event) {[m
+[32m+[m[32m  event.preventDefault();[m
+[32m+[m[32m  const selectedUserId = elements.loginUser.value;[m
+[32m+[m[32m  if (!selectedUserId) {[m
+[32m+[m[32m    alert("Select a user to log in.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  await apiFetch("/api/login", {[m
+[32m+[m[32m    method: "POST",[m
+[32m+[m[32m    body: JSON.stringify({ user_id: selectedUserId }),[m
+[32m+[m[32m  });[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function logoutUser() {[m
+[32m+[m[32m  await apiFetch("/api/logout", { method: "POST" });[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function createServer(event) {[m
+[32m+[m[32m  event.preventDefault();[m
+[32m+[m[32m  if (!state.currentUserId) {[m
+[32m+[m[32m    alert("Log in before creating a server.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const name = elements.serverName.value.trim();[m
+[32m+[m[32m  const description = elements.serverDescription.value.trim();[m
+[32m+[m[32m  if (!name) {[m
+[32m+[m[32m    alert("Server name is required.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const data = await apiFetch("/api/servers", {[m
+[32m+[m[32m    method: "POST",[m
+[32m+[m[32m    body: JSON.stringify({ name, description }),[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  state.activeThreadType = "server";[m
+[32m+[m[32m  state.activeThread = data.server.id;[m
+[32m+[m[32m  elements.createServerForm.reset();[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function joinServer(event) {[m
+[32m+[m[32m  event.preventDefault();[m
+[32m+[m[32m  const inviteCode = elements.inviteCode.value.trim();[m
+[32m+[m[32m  if (!inviteCode) {[m
+[32m+[m[32m    alert("Enter an invite code.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const data = await apiFetch("/api/servers/join", {[m
+[32m+[m[32m    method: "POST",[m
+[32m+[m[32m    body: JSON.stringify({ invite_code: inviteCode }),[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  state.activeThreadType = "server";[m
+[32m+[m[32m  state.activeThread = data.server.id;[m
+[32m+[m[32m  elements.joinServerForm.reset();[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function sendMessage(event) {[m
+[32m+[m[32m  event.preventDefault();[m
+[32m+[m[32m  const text = elements.messageInput.value.trim();[m
+[32m+[m[32m  if (!text) {[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  if (!state.activeThread) {[m
+[32m+[m[32m    alert("Pick a chat before sending a message.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  if (state.activeThreadType === "server") {[m
+[32m+[m[32m    await apiFetch(`/api/servers/${state.activeThread}/messages`, {[m
+[32m+[m[32m      method: "POST",[m
+[32m+[m[32m      body: JSON.stringify({ text }),[m
+[32m+[m[32m    });[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    await apiFetch(`/api/dm/${state.activeThread}/messages`, {[m
+[32m+[m[32m      method: "POST",[m
+[32m+[m[32m      body: JSON.stringify({ text }),[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  elements.messageInput.value = "";[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32masync function submitSuggestion(event) {[m
+[32m+[m[32m  event.preventDefault();[m
+[32m+[m[32m  if (!state.currentUserId) {[m
+[32m+[m[32m    alert("Log in to add a suggestion.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const serverId = elements.suggestionServer.value;[m
+[32m+[m[32m  const text = elements.suggestionText.value.trim();[m
+[32m+[m[32m  if (!serverId || !text) {[m
+[32m+[m[32m    alert("Choose a server and add a suggestion request.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  await apiFetch("/api/suggestions", {[m
+[32m+[m[32m    method: "POST",[m
+[32m+[m[32m    body: JSON.stringify({ server_id: serverId, text }),[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  elements.suggestionForm.reset();[m
+[32m+[m[32m  await refreshState();[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32melements.registerForm.addEventListener("submit", registerUser);[m
+[32m+[m[32melements.loginForm.addEventListener("submit", loginUser);[m
+[32m+[m[32melements.logoutButton.addEventListener("click", logoutUser);[m
+[32m+[m[32melements.createServerForm.addEventListener("submit", createServer);[m
+[32m+[m[32melements.joinServerForm.addEventListener("submit", joinServer);[m
+[32m+[m[32melements.messageForm.addEventListener("submit", sendMessage);[m
+[32m+[m[32melements.suggestionForm.addEventListener("submit", submitSuggestion);[m
+[32m+[m
+[32m+[m[32mrefreshState().catch((error) => {[m
+[32m+[m[32m  console.error(error);[m
+[32m+[m[32m  alert(error.message);[m
+[32m+[m[32m});[m
+[1mdiff --git a/static/styles.css b/static/styles.css[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e3e3e1f[m
+[1m--- /dev/null[m
+[1m+++ b/static/styles.css[m
+[36m@@ -0,0 +1,221 @@[m
+[32m+[m[32m:root {[m
+[32m+[m[32m  --bg: #0f1117;[m
+[32m+[m[32m  --panel: #171c27;[m
+[32m+[m[32m  --panel-alt: #1d2431;[m
+[32m+[m[32m  --divider: #2f3c4e;[m
+[32m+[m[32m  --text: #edf2ff;[m
+[32m+[m[32m  --muted: #a9b5c7;[m
+[32m+[m[32m  --accent: #7c9cff;[m
+[32m+[m[32m  --accent-strong: #4d76ff;[m
+[32m+[m[32m  --success: #5ec58a;[m
+[32m+[m[32m  --danger: #f07a7a;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m* {[m
+[32m+[m[32m  box-sizing: border-box;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mbody {[m
+[32m+[m[32m  margin: 0;[m
+[32m+[m[32m  min-height: 100vh;[m
+[32m+[m[32m  font-family: Arial, Helvetica, sans-serif;[m
+[32m+[m[32m  background: linear-gradient(135deg, #10141d, #1a2030);[m
+[32m+[m[32m  color: var(--text);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mbutton,[m
+[32m+[m[32minput,[m
+[32m+[m[32mtextarea,[m
+[32m+[m[32mselect {[m
+[32m+[m[32m  font: inherit;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mbutton {[m
+[32m+[m[32m  border: none;[m
+[32m+[m[32m  border-radius: 8px;[m
+[32m+[m[32m  background: var(--accent-strong);[m
+[32m+[m[32m  color: white;[m
+[32m+[m[32m  cursor: pointer;[m
+[32m+[m[32m  padding: 0.7rem 1rem;[m
+[32m+[m[32m  transition: opacity 0.2s ease;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mbutton:hover {[m
+[32m+[m[32m  opacity: 0.94;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mbutton.secondary {[m
+[32m+[m[32m  background: #364153;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32minput,[m
+[32m+[m[32mtextarea,[m
+[32m+[m[32mselect {[m
+[32m+[m[32m  width: 100%;[m
+[32m+[m[32m  background: rgba(255, 255, 255, 0.04);[m
+[32m+[m[32m  color: var(--text);[m
+[32m+[m[32m  border: 1px solid var(--divider);[m
+[32m+[m[32m  border-radius: 8px;[m
+[32m+[m[32m  padding: 0.75rem 0.8rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.app-shell {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-columns: 300px minmax(0, 1fr) 300px;[m
+[32m+[m[32m  min-height: 100vh;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.sidebar,[m
+[32m+[m[32m.main-content {[m
+[32m+[m[32m  padding: 1rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.left-pane,[m
+[32m+[m[32m.right-pane {[m
+[32m+[m[32m  background: rgba(18, 22, 31, 0.88);[m
+[32m+[m[32m  border-right: 1px solid rgba(255, 255, 255, 0.05);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.right-pane {[m
+[32m+[m[32m  border-right: none;[m
+[32m+[m[32m  border-left: 1px solid rgba(255, 255, 255, 0.05);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.brand-row {[m
+[32m+[m[32m  margin-bottom: 1rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.brand-row h1 {[m
+[32m+[m[32m  margin: 0;[m
+[32m+[m[32m  font-size: 2rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.panel {[m
+[32m+[m[32m  background: rgba(255, 255, 255, 0.025);[m
+[32m+[m[32m  border: 1px solid rgba(255, 255, 255, 0.05);[m
+[32m+[m[32m  border-radius: 14px;[m
+[32m+[m[32m  padding: 1rem;[m
+[32m+[m[32m  margin-bottom: 1rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.panel h2 {[m
+[32m+[m[32m  margin-top: 0;[m
+[32m+[m[32m  font-size: 1rem;[m
+[32m+[m[32m  letter-spacing: 0.05rem;[m
+[32m+[m[32m  text-transform: uppercase;[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.stack-form {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  gap: 0.7rem;[m
+[32m+[m[32m  margin-bottom: 0.9rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.list-box {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  gap: 0.6rem;[m
+[32m+[m[32m  margin-top: 0.75rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.list-item,[m
+[32m+[m[32m.member-item,[m
+[32m+[m[32m.server-card,[m
+[32m+[m[32m.message-item,[m
+[32m+[m[32m.suggestion-item,[m
+[32m+[m[32m.dm-card {[m
+[32m+[m[32m  background: rgba(255, 255, 255, 0.03);[m
+[32m+[m[32m  border: 1px solid rgba(255, 255, 255, 0.05);[m
+[32m+[m[32m  border-radius: 10px;[m
+[32m+[m[32m  padding: 0.7rem 0.8rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.list-item button,[m
+[32m+[m[32m.server-card button,[m
+[32m+[m[32m.member-item button,[m
+[32m+[m[32m.dm-card button {[m
+[32m+[m[32m  margin-top: 0.5rem;[m
+[32m+[m[32m  width: 100%;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.main-content {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.topbar {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  justify-content: space-between;[m
+[32m+[m[32m  background: rgba(23, 28, 39, 0.85);[m
+[32m+[m[32m  border: 1px solid rgba(255, 255, 255, 0.06);[m
+[32m+[m[32m  border-radius: 14px;[m
+[32m+[m[32m  padding: 1rem 1.2rem;[m
+[32m+[m[32m  margin-bottom: 1rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.eyebrow {[m
+[32m+[m[32m  font-size: 0.72rem;[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  text-transform: uppercase;[m
+[32m+[m[32m  letter-spacing: 0.09rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.topbar h2 {[m
+[32m+[m[32m  margin: 0.2rem 0 0;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.profile-pill {[m
+[32m+[m[32m  background: rgba(124, 156, 255, 0.15);[m
+[32m+[m[32m  border: 1px solid rgba(124, 156, 255, 0.5);[m
+[32m+[m[32m  border-radius: 999px;[m
+[32m+[m[32m  padding: 0.5rem 0.9rem;[m
+[32m+[m[32m  color: #dfe7ff;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.chat-panel {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m  flex: 1;[m
+[32m+[m[32m  background: rgba(17, 20, 27, 0.9);[m
+[32m+[m[32m  border: 1px solid rgba(255, 255, 255, 0.06);[m
+[32m+[m[32m  border-radius: 14px;[m
+[32m+[m[32m  padding: 1rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.messages {[m
+[32m+[m[32m  flex: 1;[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  gap: 0.8rem;[m
+[32m+[m[32m  overflow-y: auto;[m
+[32m+[m[32m  padding-right: 0.5rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.message-item strong {[m
+[32m+[m[32m  display: block;[m
+[32m+[m[32m  margin-bottom: 0.25rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.message-meta {[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  font-size: 0.75rem;[m
+[32m+[m[32m  margin-top: 0.3rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.message-form {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-columns: 1fr auto;[m
+[32m+[m[32m  gap: 0.75rem;[m
+[32m+[m[32m  margin-top: 1rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m@media (max-width: 980px) {[m
+[32m+[m[32m  .app-shell {[m
+[32m+[m[32m    grid-template-columns: 1fr;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .left-pane,[m
+[32m+[m[32m  .right-pane {[m
+[32m+[m[32m    border: none;[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[1mdiff --git a/templates/index.html b/templates/index.html[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8d319db[m
+[1m--- /dev/null[m
+[1m+++ b/templates/index.html[m
+[36m@@ -0,0 +1,87 @@[m
+[32m+[m[32m<!DOCTYPE html>[m
+[32m+[m[32m<html lang="en">[m
+[32m+[m[32m  <head>[m
+[32m+[m[32m    <meta charset="UTF-8" />[m
+[32m+[m[32m    <meta name="viewport" content="width=device-width, initial-scale=1.0" />[m
+[32m+[m[32m    <title>worldChat</title>[m
+[32m+[m[32m    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />[m
+[32m+[m[32m  </head>[m
+[32m+[m[32m  <body>[m
+[32m+[m[32m    <div class="app-shell">[m
+[32m+[m[32m      <aside class="sidebar left-pane">[m
+[32m+[m[32m        <div class="brand-row">[m
+[32m+[m[32m          <h1>worldChat</h1>[m
+[32m+[m[32m        </div>[m
+[32m+[m
+[32m+[m[32m        <section class="panel">[m
+[32m+[m[32m          <h2>Account</h2>[m
+[32m+[m[32m          <form id="register-form" class="stack-form">[m
+[32m+[m[32m            <input id="register-name" type="text" placeholder="New user name" maxlength="25" />[m
+[32m+[m[32m            <button type="submit">Create account</button>[m
+[32m+[m[32m          </form>[m
+[32m+[m[32m          <form id="login-form" class="stack-form">[m
+[32m+[m[32m            <select id="login-user"></select>[m
+[32m+[m[32m            <button type="submit">Log in</button>[m
+[32m+[m[32m          </form>[m
+[32m+[m[32m          <button id="logout-button" class="secondary">Log out</button>[m
+[32m+[m[32m        </section>[m
+[32m+[m
+[32m+[m[32m        <section class="panel">[m
+[32m+[m[32m          <h2>Servers</h2>[m
+[32m+[m[32m          <form id="create-server-form" class="stack-form">[m
+[32m+[m[32m            <input id="server-name" type="text" placeholder="Server name" maxlength="40" />[m
+[32m+[m[32m            <textarea id="server-description" rows="2" placeholder="Server description"></textarea>[m
+[32m+[m[32m            <button type="submit">Create server</button>[m
+[32m+[m[32m          </form>[m
+[32m+[m[32m          <form id="join-server-form" class="stack-form">[m
+[32m+[m[32m            <input id="invite-code" type="text" placeholder="Invite code" maxlength="12" />[m
+[32m+[m[32m            <button type="submit">Join server</button>[m
+[32m+[m[32m          </form>[m
+[32m+[m[32m          <div id="server-list" class="list-box"></div>[m
+[32m+[m[32m        </section>[m
+[32m+[m[32m      </aside>[m
+[32m+[m
+[32m+[m[32m      <main class="main-content">[m
+[32m+[m[32m        <header class="topbar">[m
+[32m+[m[32m          <div>[m
+[32m+[m[32m            <div class="eyebrow">Current workspace</div>[m
+[32m+[m[32m            <h2 id="current-channel-title">Choose a chat</h2>[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div class="profile-pill" id="current-user-pill">Not logged in</div>[m
+[32m+[m[32m        </header>[m
+[32m+[m
+[32m+[m[32m        <section id="chat-panel" class="chat-panel">[m
+[32m+[m[32m          <div id="messages" class="messages"></div>[m
+[32m+[m[32m          <form id="message-form" class="message-form">[m
+[32m+[m[32m            <input id="message-input" type="text" placeholder="Write a message..." maxlength="500" />[m
+[32m+[m[32m            <button type="submit">Send</button>[m
+[32m+[m[32m          </form>[m
+[32m+[m[32m        </section>[m
+[32m+[m[32m      </main>[m
+[32m+[m
+[32m+[m[32m      <aside class="sidebar right-pane">[m
+[32m+[m[32m        <section class="panel">[m
+[32m+[m[32m          <h2>Direct Messages</h2>[m
+[32m+[m[32m          <div id="dm-list" class="list-box"></div>[m
+[32m+[m[32m        </section>[m
+[32m+[m
+[32m+[m[32m        <section class="panel">[m
+[32m+[m[32m          <h2>Community</h2>[m
+[32m+[m[32m          <div id="user-list" class="list-box"></div>[m
+[32m+[m[32m        </section>[m
+[32m+[m
+[32m+[m[32m        <section class="panel">[m
+[32m+[m[32m          <h2>Suggestions</h2>[m
+[32m+[m[32m          <form id="suggestion-form" class="stack-form">[m
+[32m+[m[32m            <select id="suggestion-server"></select>[m
+[32m+[m[32m            <textarea id="suggestion-text" rows="3" placeholder="Suggest an idea for the server"></textarea>[m
+[32m+[m[32m            <button type="submit">Share suggestion</button>[m
+[32m+[m[32m          </form>[m
+[32m+[m[32m          <div id="suggestion-list" class="list-box"></div>[m
+[32m+[m[32m        </section>[m
+[32m+[m[32m      </aside>[m
+[32m+[m[32m    </div>[m
+[32m+[m
+[32m+[m[32m    <script src="{{ url_for('static', filename='app.js') }}"></script>[m
+[32m+[m[32m  </body>[m
+[32m+[m[32m</html>[m
