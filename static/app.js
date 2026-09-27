@@ -459,54 +459,6 @@ if (elements.suggestionForm) {
   elements.suggestionForm.addEventListener("submit", submitSuggestion);
 }
 
-function enablePanelResizing() {
-  const leftResizer = document.querySelector(".resizer-left");
-  const rightResizer = document.querySelector(".resizer-right");
-  const dashboardShell = document.getElementById("dashboard-shell");
-
-  if (!leftResizer || !rightResizer || !dashboardShell) {
-    return;
-  }
-
-  leftResizer.addEventListener("pointerdown", (event) => {
-    if (window.matchMedia("(max-width: 700px)").matches) return;
-    leftResizer.setPointerCapture(event.pointerId);
-    const bounds = dashboardShell.getBoundingClientRect();
-    const resizeLeft = (moveEvent) => {
-      const width = Math.max(220, Math.min(420, moveEvent.clientX - bounds.left));
-      document.body.style.setProperty("--sidebar-left", `${width}px`);
-    };
-    const finishResize = () => {
-      leftResizer.removeEventListener("pointermove", resizeLeft);
-      leftResizer.removeEventListener("pointerup", finishResize);
-      leftResizer.removeEventListener("pointercancel", finishResize);
-    };
-    leftResizer.addEventListener("pointermove", resizeLeft);
-    leftResizer.addEventListener("pointerup", finishResize);
-    leftResizer.addEventListener("pointercancel", finishResize);
-  });
-
-  rightResizer.addEventListener("pointerdown", (event) => {
-    if (window.matchMedia("(max-width: 700px)").matches) return;
-    rightResizer.setPointerCapture(event.pointerId);
-    const bounds = dashboardShell.getBoundingClientRect();
-    const resizeRight = (moveEvent) => {
-      const width = Math.max(220, Math.min(420, bounds.right - moveEvent.clientX));
-      document.body.style.setProperty("--sidebar-right", `${width}px`);
-    };
-    const finishResize = () => {
-      rightResizer.removeEventListener("pointermove", resizeRight);
-      rightResizer.removeEventListener("pointerup", finishResize);
-      rightResizer.removeEventListener("pointercancel", finishResize);
-    };
-    rightResizer.addEventListener("pointermove", resizeRight);
-    rightResizer.addEventListener("pointerup", finishResize);
-    rightResizer.addEventListener("pointercancel", finishResize);
-  });
-}
-
-enablePanelResizing();
-
 refreshState().catch((error) => {
   console.error(error);
   alert(error.message);

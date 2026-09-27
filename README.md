@@ -27,7 +27,6 @@ worldChat includes:
 ```text
 worldChat/
 ├── app.py                 # Flask application and in-memory data model
-├── routes.py              # Page and JSON API routes, plus in-memory collections
 ├── requirements.txt       # Python dependencies
 ├── .gitignore             # Secret and cache exclusions
 ├── README.md              # Project documentation
@@ -35,14 +34,13 @@ worldChat/
 │   ├── app.js             # Frontend logic and interactions
 │   └── styles.css         # Application styling
 ├── templates/
-│   ├── index.html         # Landing and account access page
-│   └── dashboard.html     # Main messaging workspace
+│   └── index.html         # Application shell and UI layout
 └── .env                   # Optional environment file for local secrets
 ```
 
 ## Why the Data Model Is Structured This Way
 
-The application uses a top-level `SESSION_MEMORY` dictionary in `routes.py` to simulate a lightweight database. That dictionary contains separate collections for users, servers, DM threads, and suggestions. `app.py` stays small and creates the Flask application, configures its session key, and registers the routes blueprint.
+The application uses a top-level `SESSION_MEMORY` dictionary in `app.py` to simulate a lightweight database. That dictionary contains separate collections for users, servers, DM threads, and suggestions. This approach keeps the application simple and operational without needing PostgreSQL while still reflecting the same high-level data organization a real backend would use.
 
 ### Data model snapshot
 
@@ -80,8 +78,6 @@ Start the Flask server:
 python app.py
 ```
 
-The landing and account page is available at `/`. The full workspace is at `/dashboard`.
-
 Then open:
 
 ```text
@@ -100,7 +96,7 @@ http://127.0.0.1:5000/
 
 ## Backend Notes
 
-The Flask routes in `routes.py` handle page rendering and communication logic, including:
+The Flask routes in `app.py` handle the communication logic, including:
 
 - user registration and login
 - server creation and deletion
@@ -122,7 +118,7 @@ This project satisfies the requested constraints:
 - No API keys are required for the default local version.
 - The app is browser-based and designed to work across desktop and mobile-sized screens.
 - Sensitive information is excluded through `.gitignore` and optional `.env` support.
-- Code comments explain the in-memory data structures in `routes.py`.
+- Code comments explain the data structure and route behavior inside `app.py`.
 - Application logic is kept in a simple, readable structure suitable for iterative improvements.
 
 ## Important Notes
