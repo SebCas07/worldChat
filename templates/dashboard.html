@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111318" />
+    <title>worldChat | Workspace</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="dashboard-page">
+    <div class="dashboard-shell" id="dashboard-shell">
+      <aside class="workspace-sidebar left-pane" aria-label="Account and servers">
+        <a class="dashboard-brand" href="/" aria-label="worldChat home">
+          <span class="brand-symbol">w</span>
+          <span>worldChat</span>
+        </a>
+
+        <section class="workspace-section account-section">
+          <div class="section-heading">
+            <h2>Account</h2>
+            <span class="online-dot" aria-label="online"></span>
+          </div>
+          <form id="register-form" class="compact-form">
+            <input id="register-name" type="text" placeholder="New user name" maxlength="25" aria-label="New user name" />
+            <button type="submit" class="action-button">Create account</button>
+          </form>
+          <form id="login-form" class="compact-form">
+            <select id="login-user" aria-label="Choose account"></select>
+            <button type="submit" class="action-button">Log in</button>
+          </form>
+          <div class="account-footer">
+            <span id="current-user-pill" class="account-status">Not logged in</span>
+            <button id="logout-button" class="text-button" type="button">Log out</button>
+          </div>
+        </section>
+
+        <section class="workspace-section servers-section">
+          <div class="section-heading">
+            <h2>Servers</h2>
+            <span class="section-count">COMMUNITIES</span>
+          </div>
+          <form id="create-server-form" class="compact-form">
+            <input id="server-name" type="text" placeholder="Server name" maxlength="40" aria-label="Server name" />
+            <textarea id="server-description" rows="2" placeholder="Server description" aria-label="Server description"></textarea>
+            <button type="submit" class="action-button">Create server</button>
+          </form>
+          <form id="join-server-form" class="join-form">
+            <input id="invite-code" type="text" placeholder="Invite code" maxlength="12" aria-label="Invite code" />
+            <button type="submit" class="icon-button" aria-label="Join with invite code" title="Join server">+</button>
+          </form>
+          <div id="server-list" class="server-list"></div>
+        </section>
+
+        <a class="home-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+      </aside>
+
+      <button class="panel-resizer resizer-left" type="button" role="separator" aria-orientation="vertical" aria-label="Resize server panel" title="Drag to resize server panel"></button>
+
+      <main class="conversation-area">
+        <header class="conversation-header">
+          <div class="conversation-title">
+            <span class="eyebrow">CURRENT WORKSPACE</span>
+            <h1 id="current-channel-title">Choose a chat</h1>
+          </div>
+          <div class="header-tools">
+            <span class="connection-state"><span class="online-dot"></span> Connected</span>
+            <button class="icon-button mobile-panel-toggle" type="button" aria-label="Show community panel" title="Community">☷</button>
+          </div>
+        </header>
+
+        <section id="chat-panel" class="chat-panel" aria-label="Conversation">
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <form id="message-form" class="message-form">
+            <input id="message-input" type="text" placeholder="Message #general" maxlength="500" aria-label="Write a message" autocomplete="off" />
+            <button type="submit" class="send-button" aria-label="Send message" title="Send message">
+              <span aria-hidden="true">↑</span>
+            </button>
+          </form>
+        </section>
+      </main>
+
+      <button class="panel-resizer resizer-right" type="button" role="separator" aria-orientation="vertical" aria-label="Resize community panel" title="Drag to resize community panel"></button>
+
+      <aside class="workspace-sidebar right-pane" aria-label="Messages and community">
+        <section class="workspace-section dm-section">
+          <div class="section-heading">
+            <h2>Direct messages</h2>
+            <button class="icon-button" type="button" aria-label="Start a direct message" title="Start a direct message">+</button>
+          </div>
+          <div id="dm-list" class="dm-list"></div>
+        </section>
+
+        <section class="workspace-section community-section">
+          <div class="section-heading">
+            <h2>Community</h2>
+            <span class="section-count" id="community-count">MEMBERS</span>
+          </div>
+          <div id="user-list" class="member-list"></div>
+        </section>
+
+        <details class="workspace-section suggestions-section">
+          <summary class="section-heading"><h2>Suggestions</h2><span class="section-count">IDEAS</span></summary>
+          <form id="suggestion-form" class="compact-form suggestion-form">
+            <select id="suggestion-server" aria-label="Suggestion server"></select>
+            <textarea id="suggestion-text" rows="3" placeholder="Share an idea" aria-label="Suggestion"></textarea>
+            <button type="submit" class="action-button">Share suggestion</button>
+          </form>
+          <div id="suggestion-list" class="suggestion-list"></div>
+        </details>
+      </aside>
+    </div>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
